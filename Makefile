@@ -2,7 +2,7 @@
 
 build:
 	@mkdir -p build/
-	g++ -o build/neba src/main.cpp
+	g++ -Ivendor/include -Lvendor/lib -o build/neba src/main.cpp -lraylib
 
 run:
 	@./build/neba
