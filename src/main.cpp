@@ -1,6 +1,5 @@
-#include <stdio.h>
-
 #include <rl/raylib.h>
+#include <rl/raymath.h>
 
 const int WIDTH = 640;
 const int HEIGHT = 480;
@@ -12,13 +11,19 @@ int main() {
     Vector2 circle = {100.0f, 100.0f};
     float speed = 200.0f;
 
+    Vector2 mov = {0.0f, 0.0f};
+
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();
 
-        if (IsKeyDown(KEY_W)) circle.y -= speed*dt;
-        if (IsKeyDown(KEY_S)) circle.y += speed*dt;
-        if (IsKeyDown(KEY_A)) circle.x -= speed*dt;
-        if (IsKeyDown(KEY_D)) circle.x += speed*dt;
+        mov = {0.0f, 0.0f};
+        if (IsKeyDown(KEY_W)) mov.y -= 1.0f;
+        if (IsKeyDown(KEY_S)) mov.y += 1.0f;
+        if (IsKeyDown(KEY_A)) mov.x -= 1.0f;
+        if (IsKeyDown(KEY_D)) mov.x += 1.0f;
+
+        Vector2 norm = Vector2Normalize(mov);
+        circle += norm * speed * dt;
 
         BeginDrawing();
             ClearBackground(RAYWHITE);
