@@ -9,21 +9,53 @@ int main() {
     SetTargetFPS(144);
 
     Vector2 circle = {100.0f, 100.0f};
-    float speed = 200.0f;
+    float speed = 250.0f;
+    float acc_speed = 0.01f;
 
     Vector2 mov = {0.0f, 0.0f};
+    Vector2 acc = {0.0f, 0.0f};
+    Vector2 slow = {0.0f, 0.0f};
+    Vector2 neg;
 
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();
 
-        mov = {0.0f, 0.0f};
-        if (IsKeyDown(KEY_W)) mov.y -= 1.0f;
-        if (IsKeyDown(KEY_S)) mov.y += 1.0f;
-        if (IsKeyDown(KEY_A)) mov.x -= 1.0f;
-        if (IsKeyDown(KEY_D)) mov.x += 1.0f;
+        if (IsKeyDown(KEY_W)) acc.y -= acc_speed;
+        if (IsKeyDown(KEY_S)) acc.y += acc_speed;
+        if (IsKeyDown(KEY_A)) acc.x -= acc_speed;
+        if (IsKeyDown(KEY_D)) acc.x += acc_speed;
 
-        Vector2 norm = Vector2Normalize(mov);
-        circle += norm * speed * dt;
+        // TODO: any helper func?
+        if (acc.x > 1.0f) {
+            acc.x = 1.0f;
+        }
+        if (acc.x < -1.0f) {
+            acc.x = -1.0f;
+        }
+        if (acc.y > 1.0f) {
+            acc.y = 1.0f;
+        }
+        if (acc.y < -1.0f) {
+            acc.y = -1.0f;
+        }
+
+        if (!IsKeyDown(KEY_W) && !IsKeyDown(KEY_S)) {
+            neg = Vector2Normalize(Vector2Negate(acc));
+            acc.y += neg.y * acc_speed;
+        }
+
+        if (!IsKeyDown(KEY_A) && !IsKeyDown(KEY_D)) {
+            neg = Vector2Normalize(Vector2Negate(acc));
+            acc.x += neg.x * acc_speed;
+        }
+
+        Vector2 norm = Vector2Normalize(acc);
+        float dist = Vector2Length(acc);
+        if (dist > 1.0f) {
+            dist = 1.0f;
+        }
+
+        circle += norm * dist * speed * dt;
 
         BeginDrawing();
             ClearBackground(RAYWHITE);
