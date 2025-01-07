@@ -3,6 +3,9 @@ build/
 vendor/
 resources/
 
+# clangd
+.cache/
+
 # Prerequisites
 *.d
 
