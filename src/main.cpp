@@ -19,16 +19,26 @@ int main() {
     InitWindow(WIDTH, HEIGHT, "neba example");
     SetTargetFPS(144);
 
-    Vector2 circle = {100.0f, 100.0f};
+    Vector2 player = {100.0f, 100.0f};
     float speed = 250.0f;
     float acc_speed = 0.01f;
 
-    float bullet_speed = 100.0f;
-    float bullet_limit = 100.0f;
+    Camera2D camera = {};
+    camera.target = player;
+    camera.offset = {WIDTH/2.0f, HEIGHT/2.0f};
+    camera.rotation = 0.0f;
+    camera.zoom = 1.0f;
+
+    float bullet_speed = 800.0f;
+    float bullet_limit = 1500.0f;
     std::vector<Bullet> bullets;
     bullets.reserve(256);
 
-    bullets.push_back({{circle.x + 1.0f, circle.y + 1.0f}, {circle.x + 1.0f, circle.y + 1.0f}, {1.0f, 1.0f}});
+    bullets.push_back({
+        {player.x + 1.0f, player.y + 1.0f},
+        {player.x + 1.0f, player.y + 1.0f},
+        {1.0f, 1.0f}
+    });
 
     Vector2 mov = {0.0f, 0.0f};
     Vector2 acc = {0.0f, 0.0f};
@@ -76,7 +86,8 @@ int main() {
             dist = 1.0f;
         }
 
-        circle += norm * dist * speed * dt;
+        player += norm * dist * speed * dt;
+        camera.target = player;
 
         for (auto &bullet : bullets) {
             if (bullet.off) {
@@ -84,7 +95,6 @@ int main() {
             }
 
             bullet.pos += bullet.direction * bullet_speed * dt;
-            printf("bullet x=%f y=%f\n", bullet.pos.x, bullet.pos.y);
 
             if (Vector2Distance(bullet.pos, bullet.start) > bullet_limit) {
                 bullet.off = true;
@@ -92,25 +102,33 @@ int main() {
         }
 
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+            Vector2 o = {camera.target.x - WIDTH/2.0f, camera.target.y - HEIGHT/2.0f};
+            Vector2 mouse_abs = o + mouse;
             bullets.push_back({
-                circle,
-                circle,
-                Vector2Normalize(mouse - circle),
+                camera.target,
+                camera.target,
+                Vector2Normalize(mouse_abs - camera.target),
             });
         }
 
 
         BeginDrawing();
             ClearBackground(RAYWHITE);
-            DrawText("neba text", 200, 200, 20, LIGHTGRAY);
-            DrawCircleV(circle, 10.0f, RED);
-            DrawLineEx(circle, mouse, 1.0f, BLACK);
+            BeginMode2D(camera);
+                DrawCircleV(player, 10.0f, RED);
 
-            for (auto &bullet : bullets) {
-                if (!bullet.off) {
-                    DrawCircleV(bullet.pos, 3.0f, BLACK);
+                DrawCircleV({150.0f, 150.0f}, 30.0f, BLUE);
+
+                for (auto &bullet : bullets) {
+                    if (!bullet.off) {
+                        DrawCircleV(bullet.pos, 3.0f, BLACK);
+                    }
                 }
-            }
+            EndMode2D();
+
+            DrawLineEx({WIDTH/2.0f, HEIGHT/2.0f}, mouse, 1.0f, BLACK);
+
+            DrawText("neba text", 200, 200, 20, LIGHTGRAY);
         EndDrawing();
     }
 
