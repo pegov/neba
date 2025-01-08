@@ -20,6 +20,7 @@ int main() {
     SetTargetFPS(144);
 
     Vector2 player = {100.0f, 100.0f};
+    float player_radius = 10.0f;
     float speed = 250.0f;
     float acc_speed = 0.01f;
 
@@ -31,6 +32,7 @@ int main() {
 
     float bullet_speed = 800.0f;
     float bullet_limit = 1500.0f;
+    float bullet_radius = 5.0f;
     std::vector<Bullet> bullets;
     bullets.reserve(256);
 
@@ -44,6 +46,9 @@ int main() {
     Vector2 acc = {0.0f, 0.0f};
     Vector2 slow = {0.0f, 0.0f};
     Vector2 neg;
+
+    Vector2 target = {150.0f, 150.0f};
+    float target_radius = 30.0f;
 
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();
@@ -86,7 +91,15 @@ int main() {
             dist = 1.0f;
         }
 
-        player += norm * dist * speed * dt;
+        float distance = Vector2Distance(player, target);
+        if (distance <= player_radius+target_radius) {
+            Vector2 out = Vector2Normalize(player - target);
+            player += out * dist * speed * dt;
+        } else {
+            player += norm * dist * speed * dt;
+        }
+
+
         camera.target = player;
 
         for (auto &bullet : bullets) {
@@ -95,6 +108,12 @@ int main() {
             }
 
             bullet.pos += bullet.direction * bullet_speed * dt;
+
+            float distance = Vector2Distance(bullet.pos, target);
+            if (distance <= bullet_radius+target_radius) {
+                bullet.off = true;
+                continue;
+            }
 
             if (Vector2Distance(bullet.pos, bullet.start) > bullet_limit) {
                 bullet.off = true;
@@ -115,13 +134,11 @@ int main() {
         BeginDrawing();
             ClearBackground(RAYWHITE);
             BeginMode2D(camera);
-                DrawCircleV(player, 10.0f, RED);
-
-                DrawCircleV({150.0f, 150.0f}, 30.0f, BLUE);
-
+                DrawCircleV(player, player_radius, RED);
+                DrawCircleV(target, target_radius, BLUE);
                 for (auto &bullet : bullets) {
                     if (!bullet.off) {
-                        DrawCircleV(bullet.pos, 3.0f, BLACK);
+                        DrawCircleV(bullet.pos, bullet_radius, BLACK);
                     }
                 }
             EndMode2D();
