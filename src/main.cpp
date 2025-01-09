@@ -108,6 +108,11 @@ int main() {
             acc.x += neg.x * acc_speed;
         }
 
+        float circle_distance = Vector2Distance(player, target);
+        if (circle_distance <= player_radius+target_radius) {
+            Vector2 out = Vector2Normalize(player - target);
+            acc = Vector2{out.x*abs(acc.x), out.y*abs(acc.y)};
+        }
 
         Vector2 norm = Vector2Normalize(acc);
         float dist = Vector2Length(acc);
@@ -115,19 +120,7 @@ int main() {
             dist = 1.0f;
         }
 
-        if (circle_rectangle_collide(player, player_radius, wall)) {
-            printf("COLLIDE!\n");
-        } else {
-            printf("NOT!\n");
-        }
-
-        float circle_distance = Vector2Distance(player, target);
-        if (circle_distance <= player_radius+target_radius) {
-            Vector2 out = Vector2Normalize(player - target);
-            player += out * dist * speed * dt;
-        } else {
-            player += norm * dist * speed * dt;
-        }
+        player += norm * dist * speed * dt;
 
         camera.target = player;
 
