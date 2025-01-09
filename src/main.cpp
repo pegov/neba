@@ -15,6 +15,23 @@ struct Bullet {
     bool off = false;
 };
 
+bool circle_rectangle_collide(Vector2 circle_pos, float circle_radius, Rectangle rectangle) {
+    float test_x = circle_pos.x;
+    float test_y = circle_pos.y;
+    if (circle_pos.x < rectangle.x) test_x = rectangle.x;
+    else if (circle_pos.x >= rectangle.x + rectangle.width) test_x = rectangle.x + rectangle.width;
+    if (circle_pos.y < rectangle.y) test_y = rectangle.y;
+    else if (circle_pos.y >= rectangle.y + rectangle.height) test_y = rectangle.y + rectangle.height;
+
+    float distance = Vector2Distance(Vector2{circle_pos.x, circle_pos.y},Vector2{test_x, test_y});
+
+    if (distance <= circle_radius) {
+        return true;
+    }
+
+    return false;
+}
+
 int main() {
     InitWindow(WIDTH, HEIGHT, "neba example");
     SetTargetFPS(144);
@@ -23,6 +40,13 @@ int main() {
     float player_radius = 10.0f;
     float speed = 250.0f;
     float acc_speed = 0.01f;
+
+    Rectangle wall = {
+        .x = 250.0f,
+        .y = 250.0f,
+        .width = 80.0f,
+        .height = 40.0f,
+    };
 
     Camera2D camera = {};
     camera.target = player;
@@ -91,14 +115,19 @@ int main() {
             dist = 1.0f;
         }
 
-        float distance = Vector2Distance(player, target);
-        if (distance <= player_radius+target_radius) {
+        if (circle_rectangle_collide(player, player_radius, wall)) {
+            printf("COLLIDE!\n");
+        } else {
+            printf("NOT!\n");
+        }
+
+        float circle_distance = Vector2Distance(player, target);
+        if (circle_distance <= player_radius+target_radius) {
             Vector2 out = Vector2Normalize(player - target);
             player += out * dist * speed * dt;
         } else {
             player += norm * dist * speed * dt;
         }
-
 
         camera.target = player;
 
@@ -134,6 +163,7 @@ int main() {
         BeginDrawing();
             ClearBackground(RAYWHITE);
             BeginMode2D(camera);
+                DrawRectanglePro(wall, Vector2{0.0f, 0.0f}, 0.0f, MAGENTA);
                 DrawCircleV(player, player_radius, RED);
                 DrawCircleV(target, target_radius, BLUE);
                 for (auto &bullet : bullets) {
@@ -153,3 +183,4 @@ int main() {
 
     return 0;
 }
+
