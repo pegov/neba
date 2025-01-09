@@ -19,9 +19,9 @@ bool circle_rectangle_collide(Vector2 circle_pos, float circle_radius, Rectangle
     float test_x = circle_pos.x;
     float test_y = circle_pos.y;
     if (circle_pos.x < rectangle.x) test_x = rectangle.x;
-    else if (circle_pos.x >= rectangle.x + rectangle.width) test_x = rectangle.x + rectangle.width;
+    else if (circle_pos.x > rectangle.x + rectangle.width) test_x = rectangle.x + rectangle.width;
     if (circle_pos.y < rectangle.y) test_y = rectangle.y;
-    else if (circle_pos.y >= rectangle.y + rectangle.height) test_y = rectangle.y + rectangle.height;
+    else if (circle_pos.y > rectangle.y + rectangle.height) test_y = rectangle.y + rectangle.height;
 
     float distance = Vector2Distance(Vector2{circle_pos.x, circle_pos.y},Vector2{test_x, test_y});
 
