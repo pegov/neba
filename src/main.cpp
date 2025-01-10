@@ -15,21 +15,82 @@ struct Bullet {
     bool off = false;
 };
 
-bool circle_rectangle_collide(Vector2 circle_pos, float circle_radius, Rectangle rectangle) {
-    float test_x = circle_pos.x;
-    float test_y = circle_pos.y;
-    if (circle_pos.x < rectangle.x) test_x = rectangle.x;
-    else if (circle_pos.x > rectangle.x + rectangle.width) test_x = rectangle.x + rectangle.width;
-    if (circle_pos.y < rectangle.y) test_y = rectangle.y;
-    else if (circle_pos.y > rectangle.y + rectangle.height) test_y = rectangle.y + rectangle.height;
+bool circle_rectangle_collide(
+    Vector2 c,
+    float cr,
+    Rectangle r
+) {
+    float test_x = c.x;
+    float test_y = c.y;
+    if (c.x < r.x) {
+        test_x = r.x;
+    } else if (c.x > r.x + r.width) {
+        test_x = r.x + r.width;
+    }
+    if (c.y < r.y) {
+        test_y = r.y;
+    } else if (c.y > r.y + r.height) {
+        test_y = r.y + r.height;
+    }
 
-    float distance = Vector2Distance(Vector2{circle_pos.x, circle_pos.y},Vector2{test_x, test_y});
+    float dist_x = c.x - test_x;
+    float dist_y = c.y - test_y;
+    float dist = sqrt((dist_x * dist_x) + (dist_y * dist_y));
 
-    if (distance <= circle_radius) {
+    if (dist <= cr) {
         return true;
     }
 
     return false;
+}
+
+Vector2 circle_rectangle_tn(
+    Vector2 c,
+    float cr,
+    Rectangle r,
+    Vector2 curr_tn
+) {
+    // top left
+    if (c.x < r.x && c.y < r.y) {
+        return Vector2Normalize(c - Vector2{r.x, r.y});
+    }
+
+    // top right
+    if (c.x > r.x && c.x > r.x+r.width && c.y < r.y) {
+        return Vector2Normalize(c - Vector2{r.x+r.width, r.y});
+    }
+
+    // bottom left
+    if (c.x < r.x && c.y > r.y+r.height) {
+        return Vector2Normalize(c - Vector2{r.x, r.y+r.height});
+    }
+
+    // bottom right
+    if (c.x > r.x+r.width && c.y > r.y+r.height) {
+        return Vector2Normalize(c - Vector2{r.x+r.width, r.y+r.height});
+    }
+
+    // top
+    if (c.x > r.x && c.y < r.y) {
+        return Vector2Normalize(Vector2{r.x, r.y-1.0f} - Vector2{r.x, r.y});
+    }
+
+    // bottom
+    if (c.x > r.x && c.y > r.y+r.height) {
+        return Vector2Normalize(Vector2{r.x, r.y+r.height+1.0f} - Vector2{r.x, r.y+r.height});
+    }
+
+    // left +
+    if (c.x < r.x && c.y > r.y) {
+        return Vector2Normalize(Vector2{r.x-1.0f, r.y} - Vector2{r.x, r.y});
+    }
+
+    // right
+    if (c.x > r.x+r.width && c.y > r.y) {
+        return Vector2Normalize(Vector2{r.x+r.width+1.0f, r.y} - Vector2{r.x+r.width, r.y});
+    }
+
+    return curr_tn;
 }
 
 int main() {
@@ -114,6 +175,12 @@ int main() {
             float alpha = Vector2Angle(tn, acc);
             float dalpha = 2*alpha;
             float beta = M_PI - dalpha;
+            acc = Vector2Rotate(acc, beta);
+        }
+
+        if (circle_rectangle_collide(player, player_radius, wall)) {
+            Vector2 tn = circle_rectangle_tn(player, player_radius, wall, acc);
+            float beta = M_PI - 2*Vector2Angle(tn, acc);
             acc = Vector2Rotate(acc, beta);
         }
 
