@@ -72,22 +72,22 @@ Vector2 circle_rectangle_tn(
 
     // top
     if (c.x > r.x && c.y < r.y) {
-        return Vector2Normalize(Vector2{r.x, r.y-1.0f} - Vector2{r.x, r.y});
+        return Vector2{0.0f, -1.0f};
     }
 
     // bottom
     if (c.x > r.x && c.y > r.y+r.height) {
-        return Vector2Normalize(Vector2{r.x, r.y+r.height+1.0f} - Vector2{r.x, r.y+r.height});
+        return Vector2{0.0f, 1.0f};
     }
 
-    // left +
+    // left
     if (c.x < r.x && c.y > r.y) {
-        return Vector2Normalize(Vector2{r.x-1.0f, r.y} - Vector2{r.x, r.y});
+        return Vector2{-1.0f, 0.0f};
     }
 
     // right
     if (c.x > r.x+r.width && c.y > r.y) {
-        return Vector2Normalize(Vector2{r.x+r.width+1.0f, r.y} - Vector2{r.x+r.width, r.y});
+        return Vector2{1.0f, 0.0f};
     }
 
     return curr_tn;
