@@ -5,6 +5,8 @@
 #include <rl/raylib.h>
 #include <rl/raymath.h>
 
+#include <fmt/core.h>
+
 const int WIDTH = 640;
 const int HEIGHT = 480;
 
@@ -42,6 +44,10 @@ bool circle_rectangle_collide(
     }
 
     return false;
+}
+
+std::string format_as(Vector2 v) {
+    return fmt::format("Vector2: {{x={} y={}}}", v.x, v.y);
 }
 
 Vector2 circle_rectangle_tn(
@@ -180,6 +186,7 @@ int main() {
 
         if (circle_rectangle_collide(player, player_radius, wall)) {
             Vector2 tn = circle_rectangle_tn(player, player_radius, wall, acc);
+            fmt::print("{}\n", tn);
             float beta = M_PI - 2*Vector2Angle(tn, acc);
             acc = Vector2Rotate(acc, beta);
         }

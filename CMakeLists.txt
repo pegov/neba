@@ -27,4 +27,4 @@ target_sources(
     neba PRIVATE
 )
 
-target_link_libraries(neba raylib)
+target_link_libraries(neba raylib fmt)
