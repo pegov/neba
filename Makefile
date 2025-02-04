@@ -2,7 +2,7 @@
 
 build:
 	@mkdir -p build/
-	g++ -Ivendor/include -fuse-ld=mold -Lvendor/lib -o build/neba src/main.cpp -lraylib
+	cmake -B build -DVENDOR_DIR=vendor && cmake --build build -- -j16
 
 run:
 	@./build/neba
