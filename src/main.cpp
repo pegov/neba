@@ -103,6 +103,11 @@ int main() {
     InitWindow(WIDTH, HEIGHT, "neba example");
     SetTargetFPS(144);
 
+    InitAudioDevice();
+    Sound theme = LoadSound("resources/sounds/ambient/theme.mp3");
+
+    PlaySound(theme);
+
     Vector2 player = {100.0f, 100.0f};
     float player_radius = 10.0f;
     float speed = 250.0f;
@@ -248,6 +253,9 @@ int main() {
             DrawText("neba text", 200, 200, 20, LIGHTGRAY);
         EndDrawing();
     }
+
+    UnloadSound(theme);
+    CloseAudioDevice();
 
     CloseWindow();
 
