@@ -99,12 +99,21 @@ Vector2 circle_rectangle_tn(
     return curr_tn;
 }
 
+#define MAX_SOUNDS 32
+
 int main() {
     InitWindow(WIDTH, HEIGHT, "neba example");
     SetTargetFPS(144);
 
     InitAudioDevice();
     Sound theme = LoadSound("resources/sounds/ambient/theme.mp3");
+
+    Sound sound_array[MAX_SOUNDS] = {};
+    int current_sound = 0;
+    sound_array[0] = LoadSound("resources/sounds/effects/shot.wav");
+    for (int i = 1; i < MAX_SOUNDS; i++) {
+        sound_array[i] = LoadSoundAlias(sound_array[0]);
+    }
 
     PlaySound(theme);
 
@@ -232,6 +241,10 @@ int main() {
                 camera.target,
                 Vector2Normalize(mouse_abs - camera.target),
             });
+            PlaySound(sound_array[current_sound++]);
+            if (current_sound >= MAX_SOUNDS) {
+                current_sound = 0;
+            }
         }
 
 
