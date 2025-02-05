@@ -251,6 +251,21 @@ int main() {
             }
         }
 
+        enum Look {
+            Down,
+            Left,
+            Right,
+        };
+
+        Look look;
+        float eps = 0.1f;
+        if (acc.x < -eps) {
+            look = Look::Left;
+        } else if (acc.x > eps) {
+            look = Look::Right;
+        } else {
+            look = Look::Down;
+        }
 
         BeginDrawing();
             ClearBackground(RAYWHITE);
@@ -261,7 +276,27 @@ int main() {
                 const float sprite_width_dst = sprite_width_src*2;
                 const float sprite_height_dst = sprite_height_src*2;
                 Rectangle dest = Rectangle{player.x-sprite_width_dst/2, player.y-sprite_height_dst/2, sprite_width_dst, sprite_height_dst};
-                DrawTexturePro(player_tex, Rectangle{18.0f, 18.0f, sprite_width_src, sprite_height_src}, dest, {}, 0.0f, WHITE);
+
+                const float sprite_down_offset_x = 18.0f;
+                const float sprite_down_offset_y = 17.0f;
+                const float sprite_left_offset_x = 18.0f;
+                const float sprite_left_offset_y = 83.0f;
+                const float sprite_right_offset_x = 18.0f;
+                const float sprite_right_offset_y = 339.0f;
+
+                switch (look) {
+                    case Look::Left:
+                        DrawTexturePro(player_tex, Rectangle{sprite_left_offset_x, sprite_left_offset_y, sprite_width_src, sprite_height_src}, dest, {}, 0.0f, WHITE);
+                        break;
+                    case Look::Right:
+                        DrawTexturePro(player_tex, Rectangle{sprite_right_offset_x, sprite_right_offset_y, sprite_width_src, sprite_height_src}, dest, {}, 0.0f, WHITE);
+                        break;
+                    case Look::Down:
+                        DrawTexturePro(player_tex, Rectangle{sprite_down_offset_x, sprite_down_offset_y, sprite_width_src, sprite_height_src}, dest, {}, 0.0f, WHITE);
+                        break;
+                }
+
+
                 DrawCircleV(target, target_radius, BLUE);
                 for (auto &bullet : bullets) {
                     if (!bullet.off) {
