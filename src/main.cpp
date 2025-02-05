@@ -7,8 +7,8 @@
 
 #include <fmt/core.h>
 
-const int WIDTH = 640;
-const int HEIGHT = 480;
+const int WIDTH = 1280;
+const int HEIGHT = 720;
 
 struct Bullet {
     Vector2 start;
@@ -116,6 +116,10 @@ int main() {
     }
 
     PlaySound(theme);
+
+    Image player_img = LoadImage("resources/textures/characters/main-walk.png");
+    Texture2D player_tex = LoadTextureFromImage(player_img);
+    UnloadImage(player_img);
 
     Vector2 player = {100.0f, 100.0f};
     float player_radius = 10.0f;
@@ -252,7 +256,12 @@ int main() {
             ClearBackground(RAYWHITE);
             BeginMode2D(camera);
                 DrawRectanglePro(wall, Vector2{0.0f, 0.0f}, 0.0f, MAGENTA);
-                DrawCircleV(player, player_radius, RED);
+                const float sprite_width_src = 12.0f;
+                const float sprite_height_src = 26.0f;
+                const float sprite_width_dst = sprite_width_src*2;
+                const float sprite_height_dst = sprite_height_src*2;
+                Rectangle dest = Rectangle{player.x-sprite_width_dst/2, player.y-sprite_height_dst/2, sprite_width_dst, sprite_height_dst};
+                DrawTexturePro(player_tex, Rectangle{18.0f, 18.0f, sprite_width_src, sprite_height_src}, dest, {}, 0.0f, WHITE);
                 DrawCircleV(target, target_radius, BLUE);
                 for (auto &bullet : bullets) {
                     if (!bullet.off) {
