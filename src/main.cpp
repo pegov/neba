@@ -17,6 +17,61 @@ struct Bullet {
     bool off = false;
 };
 
+enum Look {
+    Up,
+    Down,
+    Left,
+    Right,
+};
+
+struct PlayerSprite {
+    Texture2D tex;
+    float src_width, src_height;
+    float dst_width, dst_height;
+    Rectangle look_up_src;
+    Rectangle look_down_src;
+    Rectangle look_left_src;
+    Rectangle look_right_src;
+
+    auto init_look_srcs() -> void {
+        Vector2 up_offset = {18.0f, 211.0f};
+        Vector2 down_offset = {18.0f, 17.0f};
+        Vector2 left_offset = {18.0f, 83.0f};
+        Vector2 right_offset = {18.0f, 339.0f};
+        look_up_src = Rectangle{up_offset.x, up_offset.y, src_width, src_height};
+        look_down_src = Rectangle{down_offset.x, down_offset.y, src_width, src_height};
+        look_left_src = Rectangle{left_offset.x, left_offset.y, src_width, src_height};
+        look_right_src = Rectangle{right_offset.x, right_offset.y, src_width, src_height};
+    }
+
+    auto draw(Vector2 pos, Look look) -> void {
+        Rectangle dst = Rectangle{
+            pos.x-dst_width/2,
+            pos.y-dst_height/2,
+            dst_width,
+            dst_height
+        };
+
+        Rectangle src;
+        switch (look) {
+            case Look::Up:
+                src = look_up_src;
+                break;
+            case Look::Down:
+                src = look_down_src;
+                break;
+            case Look::Left:
+                src = look_left_src;
+                break;
+            case Look::Right:
+                src = look_right_src;
+                break;
+        }
+
+        DrawTexturePro(tex, src, dst, {}, 0.0f, WHITE);
+    }
+};
+
 bool circle_rectangle_collide(
     Vector2 c,
     float cr,
@@ -120,6 +175,17 @@ int main() {
     Image player_img = LoadImage("resources/textures/characters/main-walk.png");
     Texture2D player_tex = LoadTextureFromImage(player_img);
     UnloadImage(player_img);
+
+    const float src_width = 12.0f;
+    const float src_height = 26.0f;
+    PlayerSprite ps = {
+        .tex = player_tex,
+        .src_width = src_width,
+        .src_height = src_height,
+        .dst_width = src_width*2,
+        .dst_height = src_height*2,
+    };
+    ps.init_look_srcs();
 
     Vector2 player = {100.0f, 100.0f};
     float player_radius = 10.0f;
@@ -251,12 +317,6 @@ int main() {
             }
         }
 
-        enum Look {
-            Up,
-            Down,
-            Left,
-            Right,
-        };
 
         Look look;
         float eps = 0.1f;
@@ -272,40 +332,13 @@ int main() {
             }
         }
 
+
         BeginDrawing();
             ClearBackground(RAYWHITE);
             BeginMode2D(camera);
                 DrawRectanglePro(wall, Vector2{0.0f, 0.0f}, 0.0f, MAGENTA);
-                const float sprite_width_src = 12.0f;
-                const float sprite_height_src = 26.0f;
-                const float sprite_width_dst = sprite_width_src*2;
-                const float sprite_height_dst = sprite_height_src*2;
-                Rectangle dest = Rectangle{player.x-sprite_width_dst/2, player.y-sprite_height_dst/2, sprite_width_dst, sprite_height_dst};
 
-                const float sprite_up_offset_x = 18.0f;
-                const float sprite_up_offset_y = 211.0f;
-                const float sprite_down_offset_x = 18.0f;
-                const float sprite_down_offset_y = 17.0f;
-                const float sprite_left_offset_x = 18.0f;
-                const float sprite_left_offset_y = 83.0f;
-                const float sprite_right_offset_x = 18.0f;
-                const float sprite_right_offset_y = 339.0f;
-
-                switch (look) {
-                    case Look::Up:
-                        DrawTexturePro(player_tex, Rectangle{sprite_up_offset_x, sprite_up_offset_y, sprite_width_src, sprite_height_src}, dest, {}, 0.0f, WHITE);
-                        break;
-                    case Look::Down:
-                        DrawTexturePro(player_tex, Rectangle{sprite_down_offset_x, sprite_down_offset_y, sprite_width_src, sprite_height_src}, dest, {}, 0.0f, WHITE);
-                        break;
-                    case Look::Left:
-                        DrawTexturePro(player_tex, Rectangle{sprite_left_offset_x, sprite_left_offset_y, sprite_width_src, sprite_height_src}, dest, {}, 0.0f, WHITE);
-                        break;
-                    case Look::Right:
-                        DrawTexturePro(player_tex, Rectangle{sprite_right_offset_x, sprite_right_offset_y, sprite_width_src, sprite_height_src}, dest, {}, 0.0f, WHITE);
-                        break;
-                }
-
+                ps.draw(player, look);
 
                 DrawCircleV(target, target_radius, BLUE);
                 for (auto &bullet : bullets) {
