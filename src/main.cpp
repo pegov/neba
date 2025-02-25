@@ -212,12 +212,6 @@ int main() {
     std::vector<Bullet> bullets;
     bullets.reserve(256);
 
-    bullets.push_back({
-        {player.x + 1.0f, player.y + 1.0f},
-        {player.x + 1.0f, player.y + 1.0f},
-        {1.0f, 1.0f}
-    });
-
     Vector2 mov = {0.0f, 0.0f};
     Vector2 acc = {0.0f, 0.0f};
     Vector2 slow = {0.0f, 0.0f};
