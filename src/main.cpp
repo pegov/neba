@@ -199,11 +199,12 @@ int main() {
         .height = 40.0f,
     };
 
-    Camera2D camera = {};
-    camera.target = player;
-    camera.offset = {WIDTH/2.0f, HEIGHT/2.0f};
-    camera.rotation = 0.0f;
-    camera.zoom = 1.0f;
+    Camera2D camera = {
+        .offset = {WIDTH/2.0f, HEIGHT/2.0f},
+        .target = player,
+        .rotation = 0.0f,
+        .zoom = 1.0f,
+    };
 
     float bullet_speed = 800.0f;
     float bullet_limit = 1500.0f;
